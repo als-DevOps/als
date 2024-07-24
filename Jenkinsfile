@@ -23,6 +23,10 @@ pipeline {
                     // Get the short commit hash
                     COMMIT_HASH = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                     
+                    // Use the .env file from Jenkins credentials
+                    withCredentials([file(credentialsId: 'env-file-id', variable: 'ENV_FILE')]) {
+                        sh 'cp $ENV_FILE .env'
+
                     // Build Docker image
                     sh 'docker build -t ${DOCKER_HUB_REPO}:latest .'
                     sh 'docker tag ${DOCKER_HUB_REPO}:latest ${DOCKER_HUB_REPO}:${COMMIT_HASH}'
